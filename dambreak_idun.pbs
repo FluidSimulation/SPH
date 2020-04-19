@@ -1,0 +1,21 @@
+#PBS -N SPH_Dam_break
+#PBS -l select=7:ncpus=36:mpiprocs=36:ompthreads=1
+#PBS -l walltime=01:30:00
+#PBS -j oe
+#PBS -q epic
+
+cd $PBS_O_WORKDIR
+
+# Set up the shell environment and build the program
+. environment.sh idun
+make clean
+make SCALE=4.0
+
+# If 'plot' doesn't exist, create it
+mkdir -p plot
+# If 'plot' is full of old files, clean it
+rm -f plot/*
+
+# Run the simulation
+time mpirun ./sph
+echo "SCALE=${SCALE}"

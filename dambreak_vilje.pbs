@@ -1,0 +1,26 @@
+#PBS -N SPH_Dam_break
+#PBS -l select=1:ncpus=32:mpiprocs=2:ompthreads=8:mem=24gb
+#PBS -l walltime=00:30:00
+#PBS -A nn9589k
+#PBS -j oe
+#PBS -q test
+
+export SCALE=1.0
+export THREADS=8
+
+cd $PBS_O_WORKDIR
+
+# Set up the shell environment and build the program
+. environment.sh vilje
+export CFLAGS+=" -DNO_IO"
+make clean all SCALE=${SCALE}
+
+# If 'plot' doesn't exist, create it
+mkdir -p plot
+# If 'plot' is full of old files, clean it
+rm plot/*
+
+# Run the simulation
+time mpiexec_mpt omplace -nt ${THREADS} ./sph 
+echo Running on host `hostname`
+echo "SCALE=${SCALE}"
